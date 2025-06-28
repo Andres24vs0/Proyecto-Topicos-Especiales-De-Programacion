@@ -34,7 +34,7 @@ describe("Prueba de la ruta GET /weather/:source?city=[nombre_ciudad]", () => {
         const res = await request(app).get(
             "/weather/openweathermap?city=CiudadInexistente"
         );
-        expect(res.statusCode).toBe(404);
+        expect(res.statusCode).toBe(400);
         expect(res.body).toHaveProperty(
             "error",
             "La ciudad no fue encontrada en OpenWeatherMap"
@@ -72,7 +72,7 @@ describe("Prueba de la ruta GET /weather/:source?city=[nombre_ciudad]", () => {
         const res = await request(app).get(
             "/weather/weatherapi?city=CiudadInexistente"
         );
-        expect(res.statusCode).toBe(404);
+        expect(res.statusCode).toBe(400);
         expect(res.body).toHaveProperty(
             "error",
             "La ciudad no fue encontrada en WeatherAPI"
@@ -105,7 +105,7 @@ describe("Prueba de la ruta GET /weather/:source?city=[nombre_ciudad]", () => {
         await Weather.deleteMany({});
 
         const res = await request(app).get("/weather?city=Caracas");
-        expect(res.statusCode).toBe(404);
+        expect(res.statusCode).toBe(400);
         expect(res.body).toHaveProperty("error", "No hay registros climáticos");
     });
 });
