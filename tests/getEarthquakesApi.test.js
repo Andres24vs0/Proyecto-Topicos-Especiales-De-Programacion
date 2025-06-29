@@ -37,7 +37,7 @@ describe("Prueba de la ruta GET /earthquakes/:source?country=[pais]", () => {
         expect(res.statusCode).toBe(400);
         expect(res.body).toHaveProperty(
             "error",
-            "El pais no fue encontrada en USGS"
+            "Las coordenadas del pais no fueron encontradas"
         );
     });
     it("debería responder 200 y dar resultado cuando colocas un pais y se comunica con USGS", async () => {
@@ -75,7 +75,7 @@ describe("Prueba de la ruta GET /earthquakes/:source?country=[pais]", () => {
         expect(res.statusCode).toBe(400);
         expect(res.body).toHaveProperty(
             "error",
-            "El pais no fue encontrada en EMSC"
+            "Las coordenadas del pais no fueron encontradas"
         );
     });
     it("debería responder 200 y dar resultado cuando colocas un pais y se comunica con EMSC sin importar mayusculas", async () => {
