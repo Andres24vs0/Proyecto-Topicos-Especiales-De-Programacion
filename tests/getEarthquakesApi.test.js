@@ -45,29 +45,34 @@ describe("Prueba de la ruta GET /earthquakes/:source?country=[pais]", () => {
             "/earthquakes/USGS?country=Colombia"
         );
         expect(res.statusCode).toBe(200);
-        expect(res.body.country.toLowerCase()).toContain("colombia");
+        expect(res.body.location.toLowerCase()).toContain("colombia");
         expect(res.body).toHaveProperty("magnitude");
         expect(res.body).toHaveProperty("depth");
         expect(res.body).toHaveProperty("date");
-    });
+    }, 20000);
+
     it("debería responder 200 y dar resultado cuando colocas un pais y se comunica con USGS sin importar mayusculas", async () => {
         const res = await request(app).get(
             "/earthquakes/usgs?country=Colombia"
         );
         expect(res.statusCode).toBe(200);
-        expect(res.body.country.toLowerCase()).toContain("colombia");
+        expect(res.body.location.toLowerCase()).toContain("colombia");
         expect(res.body).toHaveProperty("magnitude");
         expect(res.body).toHaveProperty("depth");
         expect(res.body).toHaveProperty("date");
-    });
+    }, 20000);
+
     it("debería responder 200 y dar resultado cuando colocas un pais y se comunica con EMSC", async () => {
-        const res = await request(app).get("/earthquakes/EMSC?country=Colombia");
+        const res = await request(app).get(
+            "/earthquakes/EMSC?country=Colombia"
+        );
         expect(res.statusCode).toBe(200);
-        expect(res.body.country.toLowerCase()).toContain("colombia");
+        expect(res.body.location.toLowerCase()).toContain("colombia");
         expect(res.body).toHaveProperty("magnitude");
         expect(res.body).toHaveProperty("depth");
         expect(res.body).toHaveProperty("date");
-    });
+    }, 20000);
+
     it("debería responder 404 cuando pone un pais inexistente y se comunica con EMSC", async () => {
         const res = await request(app).get(
             "/earthquakes/EMSC?country=paisInexistente"
@@ -79,35 +84,41 @@ describe("Prueba de la ruta GET /earthquakes/:source?country=[pais]", () => {
         );
     });
     it("debería responder 200 y dar resultado cuando colocas un pais y se comunica con EMSC sin importar mayusculas", async () => {
-        const res = await request(app).get("/earthquakes/emsc?country=Colombia");
+        const res = await request(app).get(
+            "/earthquakes/emsc?country=Colombia"
+        );
         expect(res.statusCode).toBe(200);
-        expect(res.body.country.toLowerCase()).toContain("colombia");
+        expect(res.body.location.toLowerCase()).toContain("colombia");
         expect(res.body).toHaveProperty("magnitude");
         expect(res.body).toHaveProperty("depth");
         expect(res.body).toHaveProperty("date");
-    });
+    }, 20000);
     it("debería responder 200 y dar resultado cuando colocas un pais y se comunica con la BD", async () => {
-        await earthquakes.deleteMany({}); // Limpia la colección antes
-        const earthquakes = new earthquakes({
+        await Earthquakes.deleteMany({}); // Limpia la colección antes
+        const earthquakes = new Earthquakes({
             location: "Medellin, Colombia",
             magnitude: 5.4,
             depth: 30,
             date: "2023-11-15",
         });
         await earthquakes.save();
-        const res = await request(app).get("/earthquakes/local?country=Colombia");
+        const res = await request(app).get(
+            "/earthquakes/local?country=Colombia"
+        );
         expect(res.statusCode).toBe(200);
-        expect(res.body.country.toLowerCase()).toContain("colombia");
-        expect(res.body).toHaveProperty("magnitude",5.4);
-        expect(res.body).toHaveProperty("depth",30);
-        expect(res.body).toHaveProperty("date","2023-11-15");
-    });
+        expect(res.body.location.toLowerCase()).toContain("colombia");
+        expect(res.body).toHaveProperty("magnitude", 5.4);
+        expect(res.body).toHaveProperty("depth", 30);
+        expect(res.body).toHaveProperty("date", "2023-11-15");
+    }, 20000);
     it("debería responder con mensaje cuando no hay registros sísmicos en la BD", async () => {
         // Borra todos los registros de la colección antes de la prueba
-        await earthquakes.deleteMany({});
+        await Earthquakes.deleteMany({});
 
-        const res = await request(app).get("/earthquakes/local?country=Colombia");
+        const res = await request(app).get(
+            "/earthquakes/local?country=Colombia"
+        );
         expect(res.statusCode).toBe(400);
         expect(res.body).toHaveProperty("error", "No hay registros sísmicos");
     });
-});
+}, 20000);
