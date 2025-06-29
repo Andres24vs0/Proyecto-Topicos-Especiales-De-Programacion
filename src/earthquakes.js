@@ -3,23 +3,31 @@ import { Counter } from "./counter.js";
 const Schema = mongoose.Schema;
 
 const earthquakesSchema = new Schema({
-    _id: { type: String, required: true },
+    _id: { type: String },
     magnitude: { type: Number, required: true },
     depth: { type: Number, required: true },
     location: { type: String, required: true },
-    date: { type: Date, required: true},
+    date: { type: Date, required: true },
 });
 
-earthquakesSchema.pre("save", async function (next) {
+earthquakesSchema.pre("save", function (next) {
     if (this.isNew) {
-        const counter = await Counter.findByIdAndUpdate(
+        Counter.findByIdAndUpdate(
             { _id: "earthquakesId" },
             { $inc: { seq: 1 } },
             { new: true, upsert: true }
-        );
-        this._id = `id:sismo_${counter.seq}`;
+        )
+            .then((counter) => {
+                this._id = `id:sismo_${counter.seq}`;
+                next();
+            })
+            .catch((error) => {
+                console.error("Error en el middleware pre-save:", error);
+                next(error);
+            });
+    } else {
+        next();
     }
-    next();
 });
 
 const Earthquakes = mongoose.model("Earthquakes", earthquakesSchema);
