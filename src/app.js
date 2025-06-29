@@ -16,17 +16,18 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/weather", weatherAPIConectionRoutes);
 
 const swaggerDefinition = {
-  openapi: "3.0.0",
-  info: {
-    title: "API de Ejemplo",
-    version: "1.0.0",
-    description: "Documentación de la API usando Swagger",
-  },
+    openapi: "3.0.0",
+    info: {
+        title: "API para Datos Meteorológicos y Sismológicos",
+        version: "1.0.0",
+        description:
+            "Documentación de una API que proporciona datos meteorológicos y sismológicos, realizada como proyecto de la materia Tópicos Especiales de Programación.\n\n Elaborada por: Edwin Li, José Oropeza y Andrés Valdivieso",
+    },
 };
 
 const options = {
-  swaggerDefinition,
-  apis: ["./src/*.js"], // Archivos donde tienes tus rutas y comentarios JSDoc
+    swaggerDefinition,
+    apis: ["./src/*.js"], 
 };
 
 const swaggerSpec = swaggerJSDoc(options);

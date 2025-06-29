@@ -15,7 +15,7 @@ const connectDB = async () => {
 if (process.env.NODE_ENV !== "test") {
     connectDB().then(() => {
         app.listen(port, function () {
-            console.log(`Api corriendo en htpp://localhost:${port}`);
+            console.log(`Api corriendo en http://localhost:${port}`);
         });
     });
 }
