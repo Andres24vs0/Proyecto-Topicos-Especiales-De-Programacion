@@ -15,7 +15,9 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:source", async (req, res) => {
-    const source = req.params.source ? req.params.source.toLowerCase() : undefined;
+    const source = req.params.source
+        ? req.params.source.toLowerCase()
+        : undefined;
     const city = req.query.city;
     if (!city) {
         return res.status(400).json({
@@ -65,37 +67,32 @@ async function getOpenWeatherMap(res, city) {
         const { OPENWEATHERMAP_KEY } = process.env;
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${OPENWEATHERMAP_KEY}`;
         const response = await axios.get(url);
-        if (Array.isArray(response.data) && response.data.length === 0) {
-            return res.status(400).json({
-                error: "La ciudad no fue encontrada en OpenWeatherMap",
-            });
-        } else {
-            const clima = response.data.weather && response.data.weather[0];
-            const main = response.data.main;
-            let condition;
-            switch (clima?.main) {
-                case "Thunderstorm":
-                    condition = "Tormenta";
-                    break;
-                case "Drizzle":
-                case "Rain":
-                case "Snow":
-                    condition = "Lluvioso";
-                    break;
-                case "Clear":
-                    condition = "Soleado";
-                    break;
-                default:
-                    condition = "Nublado";
-                    break;
-            }
-            return res.status(200).json({
-                city: city,
-                temperature: main.temp,
-                humidity: main.humidity,
-                condition: condition,
-            });
+
+        const clima = response.data.weather && response.data.weather[0];
+        const main = response.data.main;
+        let condition;
+        switch (clima?.main) {
+            case "Thunderstorm":
+                condition = "Tormenta";
+                break;
+            case "Drizzle":
+            case "Rain":
+            case "Snow":
+                condition = "Lluvioso";
+                break;
+            case "Clear":
+                condition = "Soleado";
+                break;
+            default:
+                condition = "Nublado";
+                break;
         }
+        return res.status(200).json({
+            city: city,
+            temperature: main.temp,
+            humidity: main.humidity,
+            condition: condition,
+        });
     } catch (error) {
         if (error.response && error.response.status === 404) {
             return res.status(400).json({
@@ -113,30 +110,25 @@ async function getWeatherAPI(res, city) {
         const { WEATHER_API_KEY } = process.env;
         const url = `http://api.weatherapi.com/v1/current.json?key=${WEATHER_API_KEY}&q=${city}&aqi=no`;
         const response = await axios.get(url);
-        if (response.data.error) {
-            return res.status(400).json({
-                error: "La ciudad no fue encontrada en WeatherAPI",
-            });
-        } else {
-            const datos = response.data.current;
-            const cond = datos.condition;
-            let condition;
-            if (cond.code === 1000) {
-                condition = "Soleado";
-            } else if (cond.code > 1000 && cond.code <= 1171) {
-                condition = "Nublado";
-            } else if (cond.code > 1171 && cond.code <= 1264) {
-                condition = "Lluvioso";
-            } else if (cond.code > 1264) {
-                condition = "Tormenta";
-            }
-            return res.status(200).json({
-                city: city,
-                temperature: datos.temp_c,
-                humidity: datos.humidity,
-                condition: condition,
-            });
+
+        const datos = response.data.current;
+        const cond = datos.condition;
+        let condition;
+        if (cond.code === 1000) {
+            condition = "Soleado";
+        } else if (cond.code > 1000 && cond.code <= 1171) {
+            condition = "Nublado";
+        } else if (cond.code > 1171 && cond.code <= 1264) {
+            condition = "Lluvioso";
+        } else if (cond.code > 1264) {
+            condition = "Tormenta";
         }
+        return res.status(200).json({
+            city: city,
+            temperature: datos.temp_c,
+            humidity: datos.humidity,
+            condition: condition,
+        });
     } catch (error) {
         if (error.response && error.response.status === 400) {
             return res.status(400).json({
