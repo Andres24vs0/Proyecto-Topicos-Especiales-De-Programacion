@@ -4,16 +4,77 @@ import axios from "axios";
 
 const router = Router();
 
-router.get("/", async (req, res) => {
-    const city = req.query.city;
-    if (!city) {
-        return res.status(400).json({
-            error: "Debe indicar el parámetro 'city' en la consulta.",
-        });
-    }
-    await getBD(res, city);
-});
-
+/**
+ * @swagger
+ * /weather/{source}:
+ *   get:
+ *     summary: Obtiene el clima de una ciudad desde una API externa.
+ *     description: Obtiene el clima de una ciudad consultando una fuente externa (OpenWeatherMap o WeatherApi) o la base de datos propia (Local).
+ *     parameters:
+ *       - in: path
+ *         name: source
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [openweathermap, weatherapi,local]
+ *         description: Fuente de datos externa (OpenWeatherMap o WeatherApi) o la base de datos propia (Local), los nombres no son sensibles a mayúsculas ni minúsculas.
+ *       - in: query
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Nombre de la ciudad a la que quieres consultar el clima.
+ *     responses:
+ *       200:
+ *         description: Respuesta exitosa con datos del clima.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 city:
+ *                   type: string
+ *                   description: Nombre de la ciudad consultada.
+ *                 temperature:
+ *                   type: number
+ *                   description: Temperatura actual de la ciudad consultada.
+ *                 humidity:
+ *                   type: number
+ *                   description: Humedad actual de la ciudad consultada.
+ *                 condition:
+ *                   type: string
+ *                   description: Condicion de clima actual de la ciudad consultada (Soleado, nublado, lluvioso o tormenta).
+ *       400:
+ *         description: Ciudad no encontrada o parámetro faltante
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Mensaje del error ocurrido.
+ *       404:
+ *         description: Fuente de datos no válida.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Mensaje del error ocurrido.
+ *       500:
+ *         description: Error de conexión con la Base de Datos o con alguna de las APIs externas.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Mensaje del error ocurrido.
+ */
 router.get("/:source", async (req, res) => {
     const source = req.params.source
         ? req.params.source.toLowerCase()
@@ -25,6 +86,9 @@ router.get("/:source", async (req, res) => {
         });
     }
     switch (source) {
+        case "local":
+            await getBD(res, city);
+            break;
         case "openweathermap":
             await getOpenWeatherMap(res, city);
             break;
@@ -33,7 +97,7 @@ router.get("/:source", async (req, res) => {
             break;
         default:
             return res.status(404).json({
-                error: `La fuente de datos '${req.params.source}' no es válida. Las fuentes válidas son: OpenWeatherMap, WeatherApi o no colocar fuente y acceder a la Base de Datos propia.`,
+                error: `La fuente de datos '${req.params.source}' no es válida. Las fuentes válidas son: OpenWeatherMap, WeatherApi o Local.`,
             });
     }
 });

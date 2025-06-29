@@ -19,7 +19,7 @@ describe("Prueba de la ruta GET /weather/:source?city=[nombre_ciudad]", () => {
         expect(res.statusCode).toBe(404);
         expect(res.body).toHaveProperty(
             "error",
-            "La fuente de datos 'fuenteInvalida' no es válida. Las fuentes válidas son: OpenWeatherMap, WeatherApi o no colocar fuente y acceder a la Base de Datos propia."
+            "La fuente de datos 'fuenteInvalida' no es válida. Las fuentes válidas son: OpenWeatherMap, WeatherApi o Local."
         );
     });
     it("debería responder 400 cuando no indican ciudad", async () => {
@@ -95,7 +95,7 @@ describe("Prueba de la ruta GET /weather/:source?city=[nombre_ciudad]", () => {
             condition: "Soleado",
         });
         await weather.save();
-        const res = await request(app).get("/weather?city=Caracas");
+        const res = await request(app).get("/weather/local?city=Caracas");
         expect(res.statusCode).toBe(200);
         expect(res.body).toHaveProperty("city", "Caracas");
         expect(res.body).toHaveProperty("temperature");
@@ -106,7 +106,7 @@ describe("Prueba de la ruta GET /weather/:source?city=[nombre_ciudad]", () => {
         // Borra todos los registros de la colección antes de la prueba
         await Weather.deleteMany({});
 
-        const res = await request(app).get("/weather?city=Caracas");
+        const res = await request(app).get("/weather/local?city=Caracas");
         expect(res.statusCode).toBe(400);
         expect(res.body).toHaveProperty("error", "No hay registros climáticos");
     });
