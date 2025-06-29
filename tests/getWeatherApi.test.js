@@ -87,12 +87,13 @@ describe("Prueba de la ruta GET /weather/:source?city=[nombre_ciudad]", () => {
         expect(res.body).toHaveProperty("condition");
     });
     it("debería responder 200 y dar resultado cuando colocas una ciudad y se comunica con la BD", async () => {
-        await Weather.create({
+        const weather = new Weather({
             city: "Caracas",
             temperature: 25,
             humidity: 60,
             condition: "Soleado",
         });
+        await weather.save();
         const res = await request(app).get("/weather/WeatherAPI?city=Caracas");
         expect(res.statusCode).toBe(200);
         expect(res.body).toHaveProperty("city", "Caracas");
