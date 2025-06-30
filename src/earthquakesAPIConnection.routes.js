@@ -187,6 +187,28 @@ async function getBD(res, country) {
     }
 }
 
+function getEventosFiltrados(eventos, country, key) {
+    // key: 'place' para USGS, 'flynn_region' para EMSC
+    const countryLower = country.toLowerCase();
+    if (
+        countryLower === "united states of america" ||
+        countryLower === "usa" ||
+        countryLower === "united states"
+    ) {
+        // Buscar por estados para USA
+        return eventos.filter((evento) => {
+            const region = evento.properties[key]?.toLowerCase() || "";
+            return estadosUSA.some((estado) => region.includes(estado));
+        });
+    } else {
+        // Buscar por país
+        return eventos.filter((evento) => {
+            const region = evento.properties[key]?.toLowerCase() || "";
+            return region.includes(countryLower);
+        });
+    }
+}
+
 async function getUSGS(res, country) {
     try {
         const coordenadas = await getCoordinates(country);
@@ -199,7 +221,7 @@ async function getUSGS(res, country) {
         const response = await axios.get(url);
         const data = response.data;
         const eventos = data.features;
-        const eventosFiltrados = await getEventosFiltradosUSGS(eventos, country);
+        const eventosFiltrados = getEventosFiltrados(eventos, country, 'place');
         if (eventosFiltrados.length === 0) {
             return res.status(400).json({
                 error: "No hay registros sísmicos",
@@ -260,7 +282,7 @@ async function getEMSC(res, country) {
         const response = await axios.get(url);
 
         const eventos = response.data.features;
-        const eventosFiltrados = await getEventosFiltradosEMSC(eventos, country);
+        const eventosFiltrados = getEventosFiltrados(eventos, country, 'flynn_region');
         if (
             eventosFiltrados.length === 0 ||
             !eventosFiltrados[0] ||
@@ -318,54 +340,6 @@ async function getCoordinates(country) {
         console.error("Error en getCoordinates:", error.message);
         return null;
     }
-}
-
-async function getEventosFiltradosEMSC(eventos, country) {
-    let eventosFiltrados = [];
-    if (
-        country.toLowerCase() === "united states of america" ||
-        country.toLowerCase() === "usa" ||
-        country.toLowerCase() === "united states"
-    ) {
-        eventosFiltrados = eventos.filter((evento) =>
-            estadosUSA.some((estado) =>
-                evento.properties.flynn_region
-                    .toLowerCase()
-                    .includes(estado.toLowerCase())
-            )
-        );
-    } else {
-        eventosFiltrados = eventos.filter((evento) =>
-            evento.properties.flynn_region
-                .toLowerCase()
-                .includes(country.toLowerCase())
-        );
-    }
-    return eventosFiltrados;
-}
-
-async function getEventosFiltradosUSGS(eventos, country) {
-    let eventosFiltrados = [];
-    if (
-        country.toLowerCase() === "united states of america" ||
-        country.toLowerCase() === "usa" ||
-        country.toLowerCase() === "united states"
-    ) {
-        eventosFiltrados = eventos.filter((evento) =>
-            estadosUSA.some((estado) =>
-                evento.properties.place
-                    .toLowerCase()
-                    .includes(estado.toLowerCase())
-            )
-        );
-    } else {
-        eventosFiltrados = eventos.filter((evento) =>
-            evento.properties.place
-                .toLowerCase()
-                .includes(country.toLowerCase())
-        );
-    }
-    return eventosFiltrados;
 }
 
 export default router;
