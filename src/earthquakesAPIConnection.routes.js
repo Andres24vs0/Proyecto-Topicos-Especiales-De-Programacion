@@ -4,6 +4,59 @@ import axios from "axios";
 
 const router = Router();
 
+const estadosUSA = [
+    "alabama",
+    "alaska",
+    "arizona",
+    "arkansas",
+    "california",
+    "colorado",
+    "connecticut",
+    "delaware",
+    "florida",
+    "georgia",
+    "hawaii",
+    "idaho",
+    "illinois",
+    "indiana",
+    "iowa",
+    "kansas",
+    "kentucky",
+    "louisiana",
+    "maine",
+    "maryland",
+    "massachusetts",
+    "michigan",
+    "minnesota",
+    "mississippi",
+    "missouri",
+    "montana",
+    "nebraska",
+    "nevada",
+    "new hampshire",
+    "new jersey",
+    "new mexico",
+    "new york",
+    "north carolina",
+    "north dakota",
+    "ohio",
+    "oklahoma",
+    "oregon",
+    "pennsylvania",
+    "rhode island",
+    "south carolina",
+    "south dakota",
+    "tennessee",
+    "texas",
+    "utah",
+    "vermont",
+    "virginia",
+    "washington",
+    "west virginia",
+    "wisconsin",
+    "wyoming",
+];
+
 /**
  * @swagger
  * /earthquakes/{source}:
@@ -146,11 +199,7 @@ async function getUSGS(res, country) {
         const response = await axios.get(url);
         const data = response.data;
         const eventos = data.features;
-        const eventosFiltrados = eventos.filter((evento) =>
-            evento.properties.place
-                .toLowerCase()
-                .includes(country.toLowerCase())
-        );
+        const eventosFiltrados = await getEventosFiltradosUSGS(eventos, country);
         if (eventosFiltrados.length === 0) {
             return res.status(400).json({
                 error: "No hay registros sísmicos",
@@ -211,12 +260,12 @@ async function getEMSC(res, country) {
         const response = await axios.get(url);
 
         const eventos = response.data.features;
-        const eventosFiltrados = eventos.filter((evento) =>
-            evento.properties.flynn_region
-                .toLowerCase()
-                .includes(country.toLowerCase())
-        );
-        if (eventosFiltrados.length === 0) {
+        const eventosFiltrados = await getEventosFiltradosEMSC(eventos, country);
+        if (
+            eventosFiltrados.length === 0 ||
+            !eventosFiltrados[0] ||
+            !eventosFiltrados
+        ) {
             return res.status(400).json({
                 error: "No hay registros sísmicos",
             });
@@ -269,6 +318,54 @@ async function getCoordinates(country) {
         console.error("Error en getCoordinates:", error.message);
         return null;
     }
+}
+
+async function getEventosFiltradosEMSC(eventos, country) {
+    let eventosFiltrados = [];
+    if (
+        country.toLowerCase() === "united states of america" ||
+        country.toLowerCase() === "usa" ||
+        country.toLowerCase() === "united states"
+    ) {
+        eventosFiltrados = eventos.filter((evento) =>
+            estadosUSA.some((estado) =>
+                evento.properties.flynn_region
+                    .toLowerCase()
+                    .includes(estado.toLowerCase())
+            )
+        );
+    } else {
+        eventosFiltrados = eventos.filter((evento) =>
+            evento.properties.flynn_region
+                .toLowerCase()
+                .includes(country.toLowerCase())
+        );
+    }
+    return eventosFiltrados;
+}
+
+async function getEventosFiltradosUSGS(eventos, country) {
+    let eventosFiltrados = [];
+    if (
+        country.toLowerCase() === "united states of america" ||
+        country.toLowerCase() === "usa" ||
+        country.toLowerCase() === "united states"
+    ) {
+        eventosFiltrados = eventos.filter((evento) =>
+            estadosUSA.some((estado) =>
+                evento.properties.place
+                    .toLowerCase()
+                    .includes(estado.toLowerCase())
+            )
+        );
+    } else {
+        eventosFiltrados = eventos.filter((evento) =>
+            evento.properties.place
+                .toLowerCase()
+                .includes(country.toLowerCase())
+        );
+    }
+    return eventosFiltrados;
 }
 
 export default router;
