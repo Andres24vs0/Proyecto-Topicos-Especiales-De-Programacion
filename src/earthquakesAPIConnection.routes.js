@@ -4,6 +4,77 @@ import axios from "axios";
 
 const router = Router();
 
+/**
+ * @swagger
+ * /earthquakes/{source}:
+ *   get:
+ *     summary: Obtiene el último sismo de un pais desde una API externa.
+ *     description: Obtiene el último sismo de un pais consultando una fuente externa (USGS o EMSC) o la base de datos propia (Local).
+ *     parameters:
+ *       - in: path
+ *         name: source
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [USGS, EMSC,local]
+ *         description: Fuente de datos externa (USGS o EMSC) o la base de datos propia (Local), los nombres no son sensibles a mayúsculas ni minúsculas.
+ *       - in: query
+ *         name: country
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Nombre del país que se quiere consultar, el nombre del país ha de ser manejado en inglés.
+ *     responses:
+ *       200:
+ *         description: Respuesta exitosa con datos del sismo.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 magnitude:
+ *                   type: number
+ *                   description: Magnitud del sismo.
+ *                 depth:
+ *                   type: number
+ *                   description: Profundidad del sismo.
+ *                 location:
+ *                   type: string
+ *                   description: Ubicación del sismo.
+ *                 date:
+ *                   type: string
+ *                   description: Fecha del sismo en formato YYYY-MM-DD.
+ *       400:
+ *         description: País no encontrada o parámetro faltante
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Mensaje del error ocurrido.
+ *       404:
+ *         description: Fuente de datos no válida.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Mensaje del error ocurrido.
+ *       500:
+ *         description: Error de conexión con la Base de Datos o con alguna de las APIs externas.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Mensaje del error ocurrido.
+ */
 router.get("/:source", async (req, res) => {
     const source = req.params.source
         ? req.params.source.toLowerCase()
@@ -90,20 +161,23 @@ async function getUSGS(res, country) {
         );
         const props = responseReal.data.properties;
 
-        if (!props.products || !props.products.origin || !props.products.origin[0] || !props.products.origin[0].properties) {
+        if (
+            !props.products ||
+            !props.products.origin ||
+            !props.products.origin[0] ||
+            !props.products.origin[0].properties
+        ) {
             return res.status(500).json({
                 error: "La respuesta de USGS no tiene la estructura esperada",
             });
         }
 
-        const fecha = new Date(
-            props.products.origin[0].properties.eventtime
-        );
+        const fecha = new Date(props.products.origin[0].properties.eventtime);
         const soloFecha = fecha.toISOString().split("T")[0];
 
         return res.status(200).json({
             magnitude: props.mag,
-            depth: props.products.origin[0].properties.depth,
+            depth: parseInt(props.products.origin[0].properties.depth),
             location: props.place,
             date: soloFecha,
         });
@@ -133,7 +207,7 @@ async function getEMSC(res, country) {
                 error: "Las coordenadas del pais no fueron encontradas",
             });
         }
-        const url = `https://www.seismicportal.eu/fdsnws/event/1/query?format=json&orderby=time&&minlatitude=${coordenadas[0]}&maxlatitude=${coordenadas[1]}&minlongitude=${coordenadas[2]}&maxlongitude=${coordenadas[3]}`;
+        const url = `https://www.seismicportal.eu/fdsnws/event/1/query?format=json&orderby=time&limit=100&minlatitude=${coordenadas[0]}&maxlatitude=${coordenadas[1]}&minlongitude=${coordenadas[2]}&maxlongitude=${coordenadas[3]}`;
         const response = await axios.get(url);
 
         const eventos = response.data.features;
@@ -192,10 +266,7 @@ async function getCoordinates(country) {
             return coordenadas;
         }
     } catch (error) {
-        console.error(
-            "Error en getCoordinates:",
-            error.message,
-        );
+        console.error("Error en getCoordinates:", error.message);
         return null;
     }
 }
