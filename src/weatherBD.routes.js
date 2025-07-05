@@ -107,6 +107,49 @@ router.get("/history/:city", async (req, res) => {
     }
 });
 
+// GET - Obtener un registro específico por ID
+router.get("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({
+                error: "Debe especificar el ID del registro"
+            });
+        }
+
+        // Verificar que el ID tenga un formato válido (ObjectId o id:clima_X)
+        const isValidObjectId = id.match(/^[0-9a-fA-F]{24}$/);
+        const isValidCustomId = id.match(/^id:clima_\d+$/);
+        
+        if (!isValidObjectId && !isValidCustomId) {
+            return res.status(400).json({
+                error: "ID de registro inválido. El formato debe ser un ObjectId de MongoDB (24 caracteres hexadecimales) o 'id:clima_X' donde X es un número"
+            });
+        }
+
+        // Buscar el registro
+        const registro = await Weather.findById(id);
+
+        if (!registro) {
+            return res.status(404).json({
+                error: "No se encontró el registro con el ID especificado"
+            });
+        }
+
+        return res.status(200).json({
+            message: "Registro encontrado",
+            data: registro
+        });
+
+    } catch (error) {
+        console.error("Error al obtener el registro:", error);
+        return res.status(500).json({
+            error: "Error interno del servidor al consultar el registro"
+        });
+    }
+});
+
 // DELETE - Eliminar un registro específico por ID
 router.delete("/:id", async (req, res) => {
     try {
@@ -118,10 +161,13 @@ router.delete("/:id", async (req, res) => {
             });
         }
 
-        // Verificar que el ID sea válido
-        if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+        // Verificar que el ID tenga un formato válido (ObjectId o id:clima_X)
+        const isValidObjectId = id.match(/^[0-9a-fA-F]{24}$/);
+        const isValidCustomId = id.match(/^id:clima_\d+$/);
+        
+        if (!isValidObjectId && !isValidCustomId) {
             return res.status(400).json({
-                error: "ID de registro inválido"
+                error: "ID de registro inválido. El formato debe ser un ObjectId de MongoDB (24 caracteres hexadecimales) o 'id:clima_X' donde X es un número"
             });
         }
 

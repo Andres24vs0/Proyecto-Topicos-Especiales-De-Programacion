@@ -46,6 +46,7 @@ app.get('/', (req, res) => {
         endpoints: {
             'POST /weather': 'Guardar nuevo registro de clima',
             'GET /weather/history/:city': 'Obtener historial de climas de una ciudad',
+            'GET /weather/:id': 'Obtener un registro específico por ID',
             'DELETE /weather/:id': 'Eliminar un registro específico por ID'
         }
     });
@@ -75,6 +76,7 @@ if (process.env.NODE_ENV !== "test") {
             console.log(`📊 Endpoints disponibles:`);
             console.log(`   POST /weather`);
             console.log(`   GET /weather/history/:city`);
+            console.log(`   GET /weather/:id`);
             console.log(`   DELETE /weather/:id`);
         });
     }).catch((err) => {
@@ -85,6 +87,7 @@ if (process.env.NODE_ENV !== "test") {
             console.log(`📊 Endpoints disponibles:`);
             console.log(`   POST /weather`);
             console.log(`   GET /weather/history/:city`);
+            console.log(`   GET /weather/:id`);
             console.log(`   DELETE /weather/:id`);
         });
     });

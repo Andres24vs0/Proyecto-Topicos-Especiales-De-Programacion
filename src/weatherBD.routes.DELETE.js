@@ -14,10 +14,13 @@ router.delete("/:id", async (req, res) => {
             });
         }
 
-        // Verificar que el ID sea válido
-        if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+        // Verificar que el ID tenga un formato válido (ObjectId o id:clima_X)
+        const isValidObjectId = id.match(/^[0-9a-fA-F]{24}$/);
+        const isValidCustomId = id.match(/^id:clima_\d+$/);
+        
+        if (!isValidObjectId && !isValidCustomId) {
             return res.status(400).json({
-                error: "ID de registro inválido"
+                error: "ID de registro inválido. El formato debe ser un ObjectId de MongoDB (24 caracteres hexadecimales) o 'id:clima_X' donde X es un número"
             });
         }
 

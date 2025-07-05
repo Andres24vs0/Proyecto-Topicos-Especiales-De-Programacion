@@ -70,13 +70,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/weather/507f1f77bcf86cd799439011",
+							"raw": "{{base_url}}/weather/id:clima_1",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"weather",
-								"507f1f77bcf86cd799439011"
+								"id:clima_1"
 							]
 						}
 					},
@@ -113,7 +113,7 @@
 		},
 		{
 			"key": "record_id",
-			"value": "507f1f77bcf86cd799439011",
+			"value": "id:clima_1",
 			"type": "string"
 		}
 	]

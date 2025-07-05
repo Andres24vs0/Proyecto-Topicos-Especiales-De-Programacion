@@ -1,4 +1,4 @@
-# Weather API - Endpoint DELETE
+n# Weather API - Endpoint DELETE
 
 ## 📋 Descripción
 Implementación del endpoint DELETE `/weather/:id` para eliminar registros específicos de clima usando su ID de MongoDB.
@@ -13,9 +13,8 @@ Implementación del endpoint DELETE `/weather/:id` para eliminar registros espec
 ## 📊 Validaciones
 
 ### **Formato de ID**:
-- Debe ser un MongoDB ObjectId válido
-- 24 caracteres hexadecimales
-- Ejemplo: `507f1f77bcf86cd799439011`
+- Debe tener el formato `id:clima_X` donde X es un número
+- Ejemplo: `id:clima_1`, `id:clima_2`, etc.
 
 ### **Verificaciones**:
 - ID debe estar presente
@@ -25,7 +24,7 @@ Implementación del endpoint DELETE `/weather/:id` para eliminar registros espec
 ## 📝 Ejemplo de Request
 
 ```
-DELETE /weather/507f1f77bcf86cd799439011
+DELETE /weather/id:clima_1
 ```
 
 ## 📊 Respuestas
@@ -35,7 +34,7 @@ DELETE /weather/507f1f77bcf86cd799439011
 {
     "message": "Registro eliminado exitosamente",
     "deletedRecord": {
-        "_id": "507f1f77bcf86cd799439011",
+        "_id": "id:clima_1",
         "city": "Madrid",
         "temperature": 25,
         "humidity": 60,
@@ -120,12 +119,12 @@ Para obtener un ID real para las pruebas:
    ```json
    {
        "data": {
-           "_id": "507f1f77bcf86cd799439011"  // <- Este es el ID
+           "_id": "id:clima_1"  // <- Este es el ID
        }
    }
    ```
 
 3. **Usar el ID** en DELETE:
    ```bash
-   DELETE /weather/507f1f77bcf86cd799439011
+   DELETE /weather/id:clima_1
    ``` 
