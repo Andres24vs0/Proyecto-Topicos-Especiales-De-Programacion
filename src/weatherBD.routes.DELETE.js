@@ -3,7 +3,6 @@ import { Weather } from "./weather.js";
 
 const router = Router();
 
-
 // DELETE - Eliminar un registro específico por ID
 router.delete("/:id", async (req, res) => {
     try {

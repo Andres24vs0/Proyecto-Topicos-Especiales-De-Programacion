@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import weatherRoutes from './src/weatherBD.routes.js';
+import weatherRoutes from './src/weatherBD.routes.DELETE.js';
 
 // Configurar variables de entorno
 dotenv.config();
@@ -41,12 +41,9 @@ app.use('/weather', weatherRoutes);
 // Ruta de prueba
 app.get('/', (req, res) => {
     res.json({
-        message: 'API de Clima - Base de Datos',
+        message: 'API de Clima - Endpoint DELETE',
         version: '1.0.0',
         endpoints: {
-            'POST /weather': 'Guardar nuevo registro de clima',
-            'GET /weather/history/:city': 'Obtener historial de climas de una ciudad',
-            'GET /weather/:id': 'Obtener un registro específico por ID',
             'DELETE /weather/:id': 'Eliminar un registro específico por ID'
         }
     });
@@ -74,9 +71,6 @@ if (process.env.NODE_ENV !== "test") {
         app.listen(PORT, function () {
             console.log(`🚀 API corriendo en http://localhost:${PORT}`);
             console.log(`📊 Endpoints disponibles:`);
-            console.log(`   POST /weather`);
-            console.log(`   GET /weather/history/:city`);
-            console.log(`   GET /weather/:id`);
             console.log(`   DELETE /weather/:id`);
         });
     }).catch((err) => {
@@ -85,9 +79,6 @@ if (process.env.NODE_ENV !== "test") {
         app.listen(PORT, function () {
             console.log(`🚀 API corriendo en http://localhost:${PORT}`);
             console.log(`📊 Endpoints disponibles:`);
-            console.log(`   POST /weather`);
-            console.log(`   GET /weather/history/:city`);
-            console.log(`   GET /weather/:id`);
             console.log(`   DELETE /weather/:id`);
         });
     });
