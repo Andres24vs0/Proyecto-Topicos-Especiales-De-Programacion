@@ -1,11 +1,8 @@
-import mongoose from "mongoose";
-const Schema = mongoose.Schema;
+const mongoose = require('mongoose');
 
-const counterSchema = new Schema({
-    _id: { type: String, required: true },
-    seq: { type: Number, default: 0 },
+const CounterSchema = new mongoose.Schema({
+  _id: String,
+  seq: Number
 });
 
-const Counter = mongoose.model("Counter", counterSchema);
-
-export { Counter };
+module.exports = mongoose.model('Counter', CounterSchema);
