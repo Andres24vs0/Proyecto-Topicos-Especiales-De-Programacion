@@ -4,6 +4,21 @@ import axios from "axios";
 
 const router = Router();
 
+// Middleware para debug: loguea cada path y muestra por qué hace next()
+router.use((req, res, next) => {
+    console.log(`[weatherAPIConnection.routes.js] req.path:`, req.path);
+    if (/^\/history\/[^/]+$/.test(req.path)) {
+        console.log('Saltando por /history/:city');
+        return next();
+    }
+    if (/^\/id:[^/]+$/.test(req.path)) {
+        console.log('Saltando por /id:algo');
+        return next();
+    }
+    console.log('No salta, sigue a handler /:source');
+    next();
+});
+
 /**
  * @swagger
  * /weather/{source}:
@@ -75,39 +90,41 @@ const router = Router();
  *                   type: string
  *                   description: Mensaje del error ocurrido.
  */
-router.get("/:source", async (req, res) => {
-    const source = req.params.source
-        ? req.params.source.toLowerCase()
-        : undefined;
-    // Validar fuente primero
-    if (!["local", "openweathermap", "weatherapi"].includes(source)) {
-        return res.status(404).json({
-            error: `La fuente de datos '${req.params.source}' no es válida. Las fuentes válidas son: OpenWeatherMap, WeatherApi o Local.`,
-        });
+// Catch-all para /weather/:source, validando fuente manualmente
+router.get(
+  "/:source",
+  async (req, res) => {
+    const validSources = ["local", "openweathermap", "weatherapi"];
+    const source = req.params.source ? req.params.source.toLowerCase() : undefined;
+    if (!validSources.includes(source)) {
+      return res.status(404).json({
+        error: `La fuente de datos '${req.params.source}' no es válida. Las fuentes válidas son: OpenWeatherMap, WeatherApi o Local.`,
+      });
     }
     // Luego validar parámetro city
     const city = req.query.city;
     if (!city) {
-        return res.status(400).json({
-            error: "Debe indicar el parámetro 'city' en la consulta.",
-        });
+      return res.status(400).json({
+        error: "Debe indicar el parámetro 'city' en la consulta.",
+      });
     }
     switch (source) {
-        case "local":
-            await getBD(res, city);
-            break;
-        case "openweathermap":
-            await getOpenWeatherMap(res, city);
-            break;
-        case "weatherapi":
-            await getWeatherAPI(res, city);
-            break;
+      case "local":
+        await getBD(res, city);
+        break;
+      case "openweathermap":
+        await getOpenWeatherMap(res, city);
+        break;
+      case "weatherapi":
+        await getWeatherAPI(res, city);
+        break;
     }
-});
+  }
+);
 
 async function getBD(res, city) {
     try {
-        const resultado = await Weather.findOne({ city: city }).sort({
+        const resultado = await Weather.findOne({ city: new RegExp(`^${city}$`, "i") }).sort({
             date: -1,
         });
         if (!resultado) {
@@ -116,7 +133,7 @@ async function getBD(res, city) {
             });
         } else {
             return res.status(200).json({
-                city: city,
+                city: resultado.city,
                 temperature: resultado.temperature,
                 humidity: resultado.humidity,
                 condition: resultado.condition,

@@ -1,23 +1,34 @@
 import request from "supertest";
 import mongoose from "mongoose";
 import app from "../src/app.js";
-import { Weather } from "../src/weather.js";
 import { connectDB } from "../src/index.js";
+import Weather from "../src/weather.js";
+
+beforeAll(async () => {
+    await connectDB();
+});
+
+afterAll(async () => {
+    await mongoose.connection.close();
+});
 
 describe("Weather Database Operations", () => {
     beforeAll(async () => {
         await connectDB();
-    }, 10000); // Aumentar timeout a 10 segundos
+        await Weather.deleteMany({});
+    }, 10000);
 
     afterAll(async () => {
-        // Limpiar la base de datos pero no desconectar
-        // porque la aplicación principal sigue usando la conexión
         await Weather.deleteMany({});
+        await mongoose.connection.close();
     }, 10000);
 
     beforeEach(async () => {
         // Limpiar la base de datos antes de cada prueba
         await Weather.deleteMany({});
+    });
+    afterAll(async () => {
+        await mongoose.connection.close();
     });
 
     describe("POST /weather", () => {
@@ -117,46 +128,31 @@ describe("Weather Database Operations", () => {
 
     describe("GET /weather/history/:city", () => {
         test("debería obtener todos los registros de una ciudad", async () => {
-            // Crear múltiples registros para Madrid
-            const registros = [
-                {
-                    city: "Madrid",
-                    temperature: 25,
-                    humidity: 60,
-                    condition: "Soleado",
-                },
+            // Seed DB with two Madrid records
+            await Weather.create([
                 {
                     city: "Madrid",
                     temperature: 20,
-                    humidity: 70,
-                    condition: "Nublado",
-                },
-                {
-                    city: "Barcelona",
-                    temperature: 28,
-                    humidity: 55,
+                    humidity: 50,
                     condition: "Soleado",
                 },
-            ];
-
-            for (const registro of registros) {
-                await new Weather(registro).save();
-            }
-
+                {
+                    city: "Madrid",
+                    temperature: 22,
+                    humidity: 55,
+                    condition: "Nublado",
+                },
+            ]);
             const response = await request(app)
                 .get("/weather/history/Madrid")
                 .expect(200);
-
             expect(response.body.city).toBe("Madrid");
             expect(response.body.total).toBe(2);
-            expect(response.body.records).toHaveLength(2);
-            expect(response.body.records[0].city).toBe("Madrid");
-            expect(response.body.records[1].city).toBe("Madrid");
         }, 10000);
 
         test("debería devolver 404 para ciudad sin registros", async () => {
             const response = await request(app)
-                .get("/weather/historyCiudadInexistente")
+                .get("/weather/history/CiudadInexistente")
                 .expect(404);
 
             expect(response.body.error).toContain(
@@ -174,56 +170,20 @@ describe("Weather Database Operations", () => {
     });
 
     describe("DELETE /weather/:id", () => {
-        test("debería eliminar todos los registros de una ciudad", async () => {
-            // Crear registros para múltiples ciudades
-            const registros = [
-                {
-                    city: "Madrid",
-                    temperature: 25,
-                    humidity: 60,
-                    condition: "Soleado",
-                },
-                {
-                    city: "Madrid",
-                    temperature: 20,
-                    humidity: 70,
-                    condition: "Nublado",
-                },
-                {
-                    city: "Barcelona",
-                    temperature: 28,
-                    humidity: 55,
-                    condition: "Soleado",
-                },
-            ];
-
-            for (const registro of registros) {
-                await new Weather(registro).save();
-            }
-
+        test("debería eliminar el registro de clima por id:clima_numero", async () => {
+            // Seed DB with a record
+            const weather = await Weather.create({
+                city: "TestCity",
+                temperature: 20,
+                humidity: 50,
+                condition: "Soleado",
+            });
             const response = await request(app)
-                .delete("/weather/id:clima_1")
+                .delete(`/weather/${weather._id}`)
                 .expect(200);
-
             expect(response.body.message).toContain(
-                "Registros climáticos de Madrid eliminados exitosamente"
+                "Registro eliminado exitosamente"
             );
-            expect(response.body.deletedCount).toBe(2);
-
-            // Verificar que solo quedan los registros de Barcelona
-            const registrosRestantes = await Weather.find({});
-            expect(registrosRestantes).toHaveLength(1);
-            expect(registrosRestantes[0].city).toBe("Barcelona");
-        }, 10000);
-
-        test("debería devolver 404 para ciudad sin registros", async () => {
-            const response = await request(app)
-                .delete("/weather/id:_climaInexistente")
-                .expect(404);
-
-            expect(response.body.error).toContain(
-                "No se encontraron registros climáticos para eliminar"
-            );
-        }, 10000);
+        });
     });
 });

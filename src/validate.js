@@ -12,5 +12,5 @@ const validateEarthquake = (req, res, next) => {
   next();
 };
 
-module.exports = { validateEarthquake};
+export { validateEarthquake};
 

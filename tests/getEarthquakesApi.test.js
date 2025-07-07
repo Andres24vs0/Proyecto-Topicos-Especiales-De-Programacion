@@ -1,14 +1,16 @@
 import request from "supertest";
-import { app, connectDB } from "../src/index.js";
-import { Earthquake } from "../src/Earthquake.js";
+import mongoose from "mongoose";
+import app from "../src/app.js";
+import { connectDB } from "../src/index.js";
+import Earthquake from "../src/Earthquake.js";
 
 beforeAll(async () => {
     await connectDB();
+    await Earthquake.deleteMany({});
 });
 
 afterAll(async () => {
-    const mongoose = await import("mongoose");
-    await mongoose.default.connection.close();
+    await mongoose.connection.close();
 });
 
 describe("Prueba de la ruta GET /earthquakes/:source?country=[pais]", () => {
@@ -95,13 +97,14 @@ describe("Prueba de la ruta GET /earthquakes/:source?country=[pais]", () => {
     }, 20000);
     it("debería responder 200 y dar resultado cuando colocas un pais y se comunica con la BD", async () => {
         await Earthquake.deleteMany({}); // Limpia la colección antes
-        const earthquakes = new Earthquake({
+        const earthquake = new Earthquake({
+            _id: "sismo_colombia_test",
             location: "Medellin, Colombia",
             magnitude: 5.4,
             depth: 30,
             date: "2023-11-15",
         });
-        await earthquakes.save();
+        await earthquake.save();
         const res = await request(app).get(
             "/earthquakes/local?country=Colombia"
         );

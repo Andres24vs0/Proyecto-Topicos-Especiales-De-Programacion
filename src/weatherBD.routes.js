@@ -6,10 +6,10 @@ import deleteRouter from "./weatherBD.routes.DELETE.js";
 const router = Router();
 
 // POST /weather
-router.use("/", postRouter);
+router.post("/", postRouter);
 // GET /weather/history/:city
-router.use("/history", getRouter);
+router.get("/history/:city", getRouter);
 // DELETE /weather/:id
-router.use("/:id", deleteRouter);
+router.delete("/:id", deleteRouter);
 
 export default router;
