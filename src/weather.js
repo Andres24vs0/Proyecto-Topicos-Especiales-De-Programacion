@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Counter from "./Counter.js";
+import Counter from "./counter.js";
 const Schema = mongoose.Schema;
 
 const weatherSchema = new Schema({
