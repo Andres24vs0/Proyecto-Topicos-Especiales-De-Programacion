@@ -1,0 +1,300 @@
+{
+	"info": {
+		"_postman_id": "weather-api-post-collection",
+		"name": "Weather API - POST Endpoint",
+		"description": "Colección para probar el endpoint POST /weather",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Información de la API",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						""
+					]
+				},
+				"description": "Obtiene información general de la API y los endpoints disponibles"
+			},
+			"response": []
+		},
+		{
+			"name": "Guardar Registro de Clima",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"city\": \"Madrid\",\n    \"temperature\": 25,\n    \"humidity\": 60,\n    \"condition\": \"Soleado\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/weather",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"weather"
+					]
+				},
+				"description": "Guarda un nuevo registro de clima en la base de datos. Las condiciones válidas son: Soleado, Lluvioso, Nublado, Tormenta"
+			},
+			"response": []
+		},
+		{
+			"name": "Ejemplos de Datos",
+			"item": [
+				{
+					"name": "Clima Soleado",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"city\": \"Barcelona\",\n    \"temperature\": 28,\n    \"humidity\": 45,\n    \"condition\": \"Soleado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/weather",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"weather"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Clima Lluvioso",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"city\": \"Valencia\",\n    \"temperature\": 18,\n    \"humidity\": 85,\n    \"condition\": \"Lluvioso\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/weather",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"weather"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Clima Nublado",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"city\": \"Sevilla\",\n    \"temperature\": 22,\n    \"humidity\": 70,\n    \"condition\": \"Nublado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/weather",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"weather"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Clima Tormenta",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"city\": \"Bilbao\",\n    \"temperature\": 15,\n    \"humidity\": 95,\n    \"condition\": \"Tormenta\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/weather",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"weather"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Casos de Error",
+			"item": [
+				{
+					"name": "Datos Inválidos - Condición",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"city\": \"Test\",\n    \"temperature\": 25,\n    \"humidity\": 60,\n    \"condition\": \"Ventoso\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/weather",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"weather"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Datos Inválidos - Temperatura",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"city\": \"Test\",\n    \"temperature\": 100,\n    \"humidity\": 60,\n    \"condition\": \"Soleado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/weather",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"weather"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Datos Inválidos - Humedad",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"city\": \"Test\",\n    \"temperature\": 25,\n    \"humidity\": 150,\n    \"condition\": \"Soleado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/weather",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"weather"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Datos Faltantes",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"city\": \"Test\",\n    \"temperature\": 25\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/weather",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"weather"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3005",
+			"type": "string"
+		}
+	]
+} 
