@@ -1,33 +1,27 @@
 {
-  "name": "proyecto-topicos-especiales-de-programacion",
+  "name": "proyectotopic",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js"
+    "start": "node src/index.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Andres24vs0/Proyecto-Topicos-Especiales-De-Programacion.git"
-  },
+  "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Andres24vs0/Proyecto-Topicos-Especiales-De-Programacion/issues"
-  },
-  "homepage": "https://github.com/Andres24vs0/Proyecto-Topicos-Especiales-De-Programacion#readme",
+  "description": "",
   "dependencies": {
     "axios": "^1.10.0",
     "cors": "^2.8.5",
-    "dotenv": "^17.0.0",
+    "dotenv": "^17.0.1",
     "express": "^5.1.0",
     "mongoose": "^8.16.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
-    "jest": "^30.0.3",
+    "jest": "^30.0.4",
     "supertest": "^7.1.1"
   }
 }

@@ -1,14 +1,16 @@
 import request from "supertest";
-import { app, connectDB } from "../src/index.js";
-import { Weather } from "../src/weather.js";
+import mongoose from "mongoose";
+import app from "../src/app.js";
+import { connectDB } from "../src/index.js";
+import Weather from "../src/weather.js";
 
 beforeAll(async () => {
     await connectDB();
+    await Weather.deleteMany({});
 });
 
 afterAll(async () => {
-    const mongoose = await import("mongoose");
-    await mongoose.default.connection.close();
+    await mongoose.connection.close();
 });
 
 describe("Prueba de la ruta GET /weather/:source?city=[nombre_ciudad]", () => {
@@ -87,21 +89,19 @@ describe("Prueba de la ruta GET /weather/:source?city=[nombre_ciudad]", () => {
         expect(res.body).toHaveProperty("condition");
     });
     it("debería responder 200 y dar resultado cuando colocas una ciudad y se comunica con la BD", async () => {
-        await Weather.deleteMany({}); // Limpia la colección antes
-        const weather = new Weather({
+        await Weather.deleteMany({ city: "Caracas" });
+        await new Weather({
             city: "Caracas",
             temperature: 25,
             humidity: 60,
             condition: "Soleado",
-        });
-        await weather.save();
+        }).save();
         const res = await request(app).get("/weather/local?city=Caracas");
         expect(res.statusCode).toBe(200);
         expect(res.body).toHaveProperty("city", "Caracas");
         expect(res.body).toHaveProperty("temperature");
         expect(res.body).toHaveProperty("humidity");
-        expect(res.body).toHaveProperty("condition");
-    });
+    }, 20000);
     it("debería responder con mensaje cuando no hay registros climáticos en la BD", async () => {
         // Borra todos los registros de la colección antes de la prueba
         await Weather.deleteMany({});

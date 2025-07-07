@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Counter } from "./counter.js";
+import Counter from "./counter.js";
 const Schema = mongoose.Schema;
 
 const weatherSchema = new Schema({
@@ -36,4 +36,6 @@ weatherSchema.pre("save", function (next) {
 });
 
 const Weather = mongoose.model("Weather", weatherSchema);
+export default Weather;
+
 export { Weather };

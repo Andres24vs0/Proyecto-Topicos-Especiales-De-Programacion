@@ -1,0 +1,209 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Weather & Earthquake API",
+    "version": "1.0.0",
+    "description": "API para consultar información climática y sísmica."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor local"
+    }
+  ],
+  "paths": {
+    "/weather/{source}": {
+      "get": {
+        "summary": "Obtener clima por ciudad y fuente",
+        "parameters": [
+          {
+            "name": "source",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Fuente de datos: OpenWeatherMap, WeatherApi o Local."
+          },
+          {
+            "name": "city",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Nombre de la ciudad."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta exitosa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "city": { "type": "string" },
+                    "temperature": { "type": "number" },
+                    "humidity": { "type": "number" },
+                    "condition": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Error de parámetros o ciudad no encontrada" },
+          "404": { "description": "Fuente no válida" }
+        }
+      }
+    },
+    "/weather": {
+      "post": {
+        "summary": "Registrar clima en la base de datos local",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "city": { "type": "string" },
+                  "temperature": { "type": "number" },
+                  "humidity": { "type": "number" },
+                  "condition": { "type": "string", "enum": ["Soleado", "Lluvioso", "Nublado", "Tormenta"] }
+                },
+                "required": ["city", "temperature", "humidity", "condition"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Clima registrado exitosamente" },
+          "400": { "description": "Datos inválidos" }
+        }
+      },
+      "delete": {
+        "summary": "Eliminar un registro climático por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID del registro climático a eliminar."
+          }
+        ],
+        "responses": {
+          "200": { "description": "Registro eliminado" },
+          "404": { "description": "Registro no encontrado" }
+        }
+      }
+    },
+    "/earthquakes": {
+      "get": {
+        "summary": "Obtener todos los registros sísmicos",
+        "responses": {
+          "200": {
+            "description": "Lista de sismos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Earthquake"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Registrar un sismo en la base de datos local",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Earthquake"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Sismo registrado exitosamente" },
+          "400": { "description": "Datos inválidos" }
+        }
+      },
+      "delete": {
+        "summary": "Eliminar un registro sísmico por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID del registro sísmico a eliminar."
+          }
+        ],
+        "responses": {
+          "200": { "description": "Registro eliminado" },
+          "404": { "description": "Registro no encontrado" }
+        }
+      }
+    },
+    "/earthquakes/{city}": {
+      "get": {
+        "summary": "Obtener sismos por ciudad",
+        "parameters": [
+          {
+            "name": "city",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Nombre de la ciudad."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de sismos en la ciudad",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Earthquake"
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "No se encontraron sismos para la ciudad" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Weather": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "city": { "type": "string" },
+          "temperature": { "type": "number" },
+          "humidity": { "type": "number" },
+          "condition": { "type": "string" },
+          "date": { "type": "string", "format": "date-time" }
+        },
+        "required": ["city", "temperature", "humidity", "condition"]
+      },
+      "Earthquake": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "city": { "type": "string" },
+          "magnitude": { "type": "number" },
+          "depth": { "type": "number" },
+          "date": { "type": "string", "format": "date-time" }
+        },
+        "required": ["city", "magnitude", "depth"]
+      }
+    }
+  }
+}

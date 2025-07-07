@@ -1,13 +1,14 @@
 import request from "supertest";
-import { app, connectDB } from "../src/index.js";
+import { connectDB } from "../src/index.js";
+import app from "../src/app.js";
+import mongoose from "mongoose";
 
 beforeAll(async () => {
     await connectDB();
 });
 
 afterAll(async () => {
-    const mongoose = await import("mongoose");
-    await mongoose.default.connection.close();
+    await mongoose.connection.close();
 });
 
 describe("API básica", () => {
