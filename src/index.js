@@ -1,23 +1,25 @@
-import mongoose from "mongoose";
-import app from "./app.js";
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const earthquakeRoutes = require('./earthquakes');
 
-const port = 3005;
+const app = express();
+app.use(express.json());
 
-const connectDB = async () => {
-    const { MONGO_USER, MONGO_PASS, MONGO_HOST, MONGO_DB } = process.env;
-    const url = `mongodb+srv://${MONGO_USER}:${MONGO_PASS}@${MONGO_HOST}/${MONGO_DB}`;
-    await mongoose
-        .connect(url)
-        .then(() => console.log("Conectado a MongoDB"))
-        .catch((err) => console.error("Error de conexión:", err));
-};
+app.use('/earthquakes', earthquakeRoutes);
 
-if (process.env.NODE_ENV !== "test") {
-    connectDB().then(() => {
-        app.listen(port, function () {
-            console.log(`Api corriendo en http://localhost:${port}`);
-        });
-    });
-}
+const uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_HOST}/${process.env.MONGO_DB}?retryWrites=true&w=majority`;
 
-export { app, connectDB };
+mongoose.connect(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+
+mongoose.connection.once('open', () => {
+  console.log('Conectado a MongoDB');
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
