@@ -1,8 +1,10 @@
-const express = require('express');
-const { postEarthquake} = require('./earthquakeController');
-const { validateEarthquake } = require('./validate');
+import express from "express";
+import { postEarthquake } from "./earthquakeController.js";
+import { validateEarthquake } from "./validate.js";
+
 
 const router = express.Router();
-router.post('/', validateEarthquake, postEarthquake);
+router.post("/", validateEarthquake, postEarthquake);
 
-module.exports = router;
+export default router;
+

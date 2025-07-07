@@ -47,7 +47,7 @@ router.post("/", async (req, res) => {
         const climaGuardado = await nuevoClima.save();
 
         return res.status(201).json({
-            message: "Registro de clima guardado exitosamente",
+            message: "Clima guardado exitosamente",
             data: climaGuardado
         });
 

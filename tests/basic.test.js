@@ -1,5 +1,6 @@
 import request from "supertest";
-import { app, connectDB } from "../src/index.js";
+import { connectDB } from "../src/index.js";
+import app from "../src/app.js";
 
 beforeAll(async () => {
     await connectDB();
