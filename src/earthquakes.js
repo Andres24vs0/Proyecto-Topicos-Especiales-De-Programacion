@@ -1,3 +1,4 @@
+
 const express = require('express');
 const { getCities } = require('./earthquakeController');
 const { getEarthquakesByCity } = require('./earthquakeController');

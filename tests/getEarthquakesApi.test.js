@@ -1,6 +1,6 @@
 import request from "supertest";
 import { app, connectDB } from "../src/index.js";
-import { Earthquakes } from "../src/earthquakes.js";
+import { Earthquake } from "../src/Earthquake.js";
 
 beforeAll(async () => {
     await connectDB();
@@ -94,8 +94,8 @@ describe("Prueba de la ruta GET /earthquakes/:source?country=[pais]", () => {
         expect(res.body).toHaveProperty("date");
     }, 20000);
     it("debería responder 200 y dar resultado cuando colocas un pais y se comunica con la BD", async () => {
-        await Earthquakes.deleteMany({}); // Limpia la colección antes
-        const earthquakes = new Earthquakes({
+        await Earthquake.deleteMany({}); // Limpia la colección antes
+        const earthquakes = new Earthquake({
             location: "Medellin, Colombia",
             magnitude: 5.4,
             depth: 30,
@@ -113,7 +113,7 @@ describe("Prueba de la ruta GET /earthquakes/:source?country=[pais]", () => {
     }, 20000);
     it("debería responder con mensaje cuando no hay registros sísmicos en la BD", async () => {
         // Borra todos los registros de la colección antes de la prueba
-        await Earthquakes.deleteMany({});
+        await Earthquake.deleteMany({});
 
         const res = await request(app).get(
             "/earthquakes/local?country=Colombia"

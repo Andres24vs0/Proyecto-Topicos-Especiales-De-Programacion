@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Earthquakes } from "./earthquakes.js";
+import { Earthquake } from "./Earthquake.js";
 import axios from "axios";
 
 const router = Router();
@@ -132,6 +132,13 @@ router.get("/:source", async (req, res) => {
     const source = req.params.source
         ? req.params.source.toLowerCase()
         : undefined;
+    // Validar fuente primero
+    if (!["local", "usgs", "emsc"].includes(source)) {
+        return res.status(404).json({
+            error: `La fuente de datos '${req.params.source}' no es válida. Las fuentes válidas son: USGS, EMSC o Local.`,
+        });
+    }
+    // Luego validar parámetro country
     const country = req.query.country;
     if (!country) {
         return res.status(400).json({
@@ -148,16 +155,12 @@ router.get("/:source", async (req, res) => {
         case "emsc":
             await getEMSC(res, country);
             break;
-        default:
-            return res.status(404).json({
-                error: `La fuente de datos '${req.params.source}' no es válida. Las fuentes válidas son: USGS, EMSC o Local.`,
-            });
     }
 });
 
 async function getBD(res, country) {
     try {
-        const resultado = await Earthquakes.findOne({
+        const resultado = await Earthquake.findOne({
             location: { $regex: country, $options: "i" },
         }).sort({
             date: -1,
@@ -221,7 +224,7 @@ async function getUSGS(res, country) {
         const response = await axios.get(url);
         const data = response.data;
         const eventos = data.features;
-        const eventosFiltrados = getEventosFiltrados(eventos, country, 'place');
+        const eventosFiltrados = getEventosFiltrados(eventos, country, "place");
         if (eventosFiltrados.length === 0) {
             return res.status(400).json({
                 error: "No hay registros sísmicos",
@@ -282,7 +285,11 @@ async function getEMSC(res, country) {
         const response = await axios.get(url);
 
         const eventos = response.data.features;
-        const eventosFiltrados = getEventosFiltrados(eventos, country, 'flynn_region');
+        const eventosFiltrados = getEventosFiltrados(
+            eventos,
+            country,
+            "flynn_region"
+        );
         if (
             eventosFiltrados.length === 0 ||
             !eventosFiltrados[0] ||

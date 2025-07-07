@@ -1,3 +1,4 @@
+
 const validateEarthquake = (req, res, next) => {
   const { magnitude, depth, location, date } = req.body;
   if (
@@ -12,3 +13,4 @@ const validateEarthquake = (req, res, next) => {
 };
 
 module.exports = { validateEarthquake};
+

@@ -79,6 +79,13 @@ router.get("/:source", async (req, res) => {
     const source = req.params.source
         ? req.params.source.toLowerCase()
         : undefined;
+    // Validar fuente primero
+    if (!["local", "openweathermap", "weatherapi"].includes(source)) {
+        return res.status(404).json({
+            error: `La fuente de datos '${req.params.source}' no es válida. Las fuentes válidas son: OpenWeatherMap, WeatherApi o Local.`,
+        });
+    }
+    // Luego validar parámetro city
     const city = req.query.city;
     if (!city) {
         return res.status(400).json({
@@ -95,10 +102,6 @@ router.get("/:source", async (req, res) => {
         case "weatherapi":
             await getWeatherAPI(res, city);
             break;
-        default:
-            return res.status(404).json({
-                error: `La fuente de datos '${req.params.source}' no es válida. Las fuentes válidas son: OpenWeatherMap, WeatherApi o Local.`,
-            });
     }
 });
 
