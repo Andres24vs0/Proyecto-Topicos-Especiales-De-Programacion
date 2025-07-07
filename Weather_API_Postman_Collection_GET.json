@@ -1,0 +1,161 @@
+{
+	"info": {
+		"_postman_id": "weather-api-get-collection",
+		"name": "Weather API - GET Endpoint",
+		"description": "Colección para probar el endpoint GET /weather/history/:city",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Información de la API",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						""
+					]
+				},
+				"description": "Obtiene información general de la API y los endpoints disponibles"
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener Historial de Ciudad",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/weather/history/{{city_name}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"weather",
+						"history",
+						"{{city_name}}"
+					]
+				},
+				"description": "Obtiene el historial completo de registros climáticos de una ciudad específica"
+			},
+			"response": []
+		},
+		{
+			"name": "Ejemplos de Ciudades",
+			"item": [
+				{
+					"name": "Historial de Madrid",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/weather/history/Madrid",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"weather",
+								"history",
+								"Madrid"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Historial de Barcelona",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/weather/history/Barcelona",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"weather",
+								"history",
+								"Barcelona"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Historial de Valencia",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/weather/history/Valencia",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"weather",
+								"history",
+								"Valencia"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Historial de Sevilla",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/weather/history/Sevilla",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"weather",
+								"history",
+								"Sevilla"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3005",
+			"type": "string"
+		},
+		{
+			"key": "city_name",
+			"value": "Madrid",
+			"type": "string"
+		}
+	]
+} 
